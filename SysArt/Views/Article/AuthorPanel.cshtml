@@ -1,0 +1,69 @@
+﻿@model IEnumerable<SysArt.Models.Articles>
+
+<h2>Panel autora</h2>
+
+@if (TempData["Message"] != null)
+{
+        <div class="alert alert-success">@TempData["Message"]</div>
+}
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h3>Dodaj nowy artykuł</h3>
+        <form asp-action="SubmitArticle" asp-controller="Article" method="post">
+            <input name="title" placeholder="Tytuł artykułu" class="form-control mb-2" required />
+            <textarea name="content" placeholder="Treść artykułu" class="form-control mb-2" required></textarea>
+
+            <select name="topicId" class="form-select mb-2" required>
+                @foreach (var topic in ViewBag.Topics)
+                {
+                        <option value="@topic.Id">@topic.Name</option>
+                }
+            </select>
+
+            <input name="coAuthorsEmails" placeholder="Adresy e-mail współautorów, oddzielone przecinkami" class="form-control mb-2"/>
+
+            <button type="submit" class="btn btn-success">Prześlij artykuł</button>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Twoje artykuły</h3>
+        @if (!Model.Any())
+        {
+                <p>Nie masz jeszcze żadnych artykułów.</p>
+        }
+        else
+        {
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Tytuł</th>
+                            <th>Status</th>
+                            <th>Temat</th>
+                            <th>Współautorzy</th>
+                            <th>Data dodania</th>
+                            <th>Szczegóły</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var article in Model)
+                    {
+                            <tr>
+                                <td>@article.Title</td>
+                                <td>@article.Status</td>
+                                <td>@article.Topic?.Name</td>
+                                <td>@article.CoAuthors</td> <!-- teraz pobieramy współautorów ze stringa -->
+                                <td>@article.CreatedAt.ToShortDateString()</td>
+                                <td>
+                                    <a asp-action="Details" asp-controller="Article" asp-route-id="@article.Id" class="btn btn-info btn-sm">Zobacz</a>
+                                </td>
+                            </tr>
+                    }
+                    </tbody>
+                </table>
+        }
+    </div>
+</div>

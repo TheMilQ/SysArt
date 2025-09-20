@@ -1,0 +1,33 @@
+﻿<h2>Oczekujące prośby o rolę</h2>
+
+@if (TempData["Message"] != null)
+{
+        <div class="alert alert-success">@TempData["Message"]</div>
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Użytkownik</th>
+            <th>Rola</th>
+            <th>Data wysłania</th>
+            <th>Akcja</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var req in Model)
+        {
+                <tr>
+                    <td>@req.User.Name @req.User.LastName (@req.User.Email)</td>
+                    <td>@req.RoleName</td>
+                    <td>@req.RequestedAt</td>
+                    <td>
+                        <form asp-action="ApproveRole" method="post">
+                            <input type="hidden" name="requestId" value="@req.Id"/>
+                            <button type="submit" class="btn btn-success btn-sm">Zatwierdź</button>
+                        </form>
+                    </td>
+                </tr>
+        }
+    </tbody>
+</table>

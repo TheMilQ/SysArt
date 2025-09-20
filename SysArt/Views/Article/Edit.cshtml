@@ -1,0 +1,30 @@
+﻿@model SysArt.Models.Articles
+
+@{
+    ViewData["Title"] = "Edytuj artykuł";
+}
+
+<h2>Edytuj artykuł</h2>
+
+<form asp-action="Edit" asp-controller="Article" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Tytuł artykułu</label>
+        <input asp-for="Title" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Temat</label>
+        <select asp-for="TopicId" asp-items="ViewBag.Topics" class="form-select" required></select>
+    </div>
+
+
+    <div class="mb-3">
+        <label class="form-label">Treść artykułu</label>
+        <textarea asp-for="Content" class="form-control" rows="8" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Zapisz zmiany</button>
+    <a asp-action="Details" asp-controller="Article" asp-route-id="@Model.Id" class="btn btn-secondary">Anuluj</a>
+</form>

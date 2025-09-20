@@ -1,0 +1,76 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using SysArt.Models
+@inject UserManager<Users> UserManager
+@inject SignInManager<Users> SignInManager
+
+@model Users
+
+@{
+    // Pobranie ról zalogowanego użytkownika
+    var roles = await UserManager.GetRolesAsync(Model);
+
+    // Pobranie przypisanych artykułów z ViewBag
+    var articles = ViewBag.Articles as IEnumerable<Articles> ?? Enumerable.Empty<Articles>();
+    var roleRequests = ViewBag.RoleRequests as IEnumerable<RoleRequest> ?? Enumerable.Empty<RoleRequest>();
+}
+
+<div class="account-panel">
+    <h2>Panel konta</h2>
+
+    <p><strong>Zalogowany jako:</strong> @Model.Email</p>
+    <p><strong>Twoje role:</strong> @string.Join(", ", roles)</p>
+
+    <hr />
+
+    <h3>Poproś o rolę</h3>
+    <form asp-action="RequestRole" method="post">
+        <select name="roleName" class="form-select mb-2">
+            <option value="Author">Author</option>
+            <option value="Reviewer">Reviewer</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Wyślij prośbę</button>
+    </form>
+
+    <h3>Twoje oczekujące prośby</h3>
+    @if (roleRequests.Any())
+    {
+            <ul>
+            @foreach (var req in roleRequests)
+            {
+                    <li>@req.RoleName – wysłano @req.RequestedAt.ToString("g") – @(req.IsApproved ? "Zatwierdzona" : "Oczekuje")</li>
+            }
+            </ul>
+    }
+    else
+    {
+            <p>Brak oczekujących próśb</p>
+    }
+
+    <hr />
+
+    <!-- PANEL AUTORA -->
+    @if (roles.Contains("Author"))
+    {
+            <h3>Twoje artykuły</h3>
+            <partial name="_AuthorPanelPartial" model="articles" />
+    }
+
+    <!-- PANEL RECENZENTA -->
+    @if (roles.Contains("Reviewer"))
+    {
+            <h3>Panel recenzenta</h3>
+            <partial name="_ReviewerPanelPartial" model="articles" />
+    }
+</div>
+
+<style>
+/* Wyłączenie efektu podnoszenia kart tylko w AccountPanel */
+.account-panel .article-card {
+    transition: none !important;
+}
+
+.account-panel .article-card:hover {
+    transform: none !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25) !important;
+}
+</style>

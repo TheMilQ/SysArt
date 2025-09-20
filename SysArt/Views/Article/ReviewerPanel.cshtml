@@ -1,0 +1,57 @@
+﻿@model IEnumerable<SysArt.Models.Articles>
+
+<h2>Panel recenzenta</h2>
+
+@if (TempData["Message"] != null)
+{
+        <div class="alert alert-success">@TempData["Message"]</div>
+}
+
+@if (ViewBag.Topics != null)
+{
+        <form method="get" class="mb-3">
+            <select name="topicId" class="form-select mb-2">
+                <option value="">Wszystkie tematy</option>
+            @foreach (var topic in ViewBag.Topics as IEnumerable<SysArt.Models.Topics>)
+            {
+                        <option value="@topic.Id">@topic.Name</option>
+            }
+            </select>
+            <button type="submit" class="btn btn-primary">Filtruj</button>
+        </form>
+}
+
+@if (Model != null && Model.Any())
+{
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Tytuł</th>
+                    <th>Treść</th>
+                    <th>Akcja</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var article in Model)
+            {
+                        <tr>
+                            <td>@article.Title</td>
+                            <td>@article.Content</td>
+                            <td>
+                                <form asp-action="AddReview" asp-controller="Article" method="post">
+                                    <input type="hidden" name="articleId" value="@article.Id"/>
+                                    <textarea name="content" placeholder="Komentarz" class="form-control mb-1" required></textarea>
+                                    <input type="number" name="rating" min="1" max="5" class="form-control mb-1" placeholder="Ocena 1-5" required/>
+                                    <button type="submit" class="btn btn-success btn-sm">Dodaj recenzję</button>
+                                </form>
+                                <a asp-action="Details" asp-controller="Article" asp-route-id="@article.Id" class="btn btn-info btn-sm mt-1">Zobacz szczegóły</a>
+                            </td>
+                        </tr>
+            }
+            </tbody>
+        </table>
+}
+else
+{
+        <p>Brak artykułów do recenzji.</p>
+}

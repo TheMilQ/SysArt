@@ -1,0 +1,20 @@
+﻿@model SysArt.Models.Reviews
+
+<h2>Edytuj recenzję artykułu: @Model.Article.Title</h2>
+
+<form asp-action="EditReview" asp-controller="Article" method="post">
+    <input type="hidden" name="reviewId" value="@Model.Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Komentarz</label>
+        <textarea name="content" class="form-control" rows="4" required>@Model.Content</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Ocena (1-5)</label>
+        <input type="number" name="rating" min="1" max="5" step="1" value="@Model.Rating" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-success">Zapisz zmiany</button>
+    <a asp-action="Details" asp-controller="Article" asp-route-id="@Model.ArticleId" class="btn btn-secondary">Anuluj</a>
+</form>

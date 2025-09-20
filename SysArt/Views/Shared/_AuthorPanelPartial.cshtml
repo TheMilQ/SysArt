@@ -1,0 +1,35 @@
+﻿@model IEnumerable<SysArt.Models.Articles>
+
+@if (!Model.Any())
+{
+        <p>Nie masz przypisanych artykułów.</p>
+}
+else
+{
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tytuł</th>
+                    <th>Status</th>
+                    <th>Utworzono</th>
+                    <th>Edytowano</th>
+                    <th>Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var article in Model)
+            {
+                        <tr>
+                            <td>@article.Title</td>
+                            <td>@article.Status</td>
+                            <td>@article.CreatedAt.ToString("g")</td>
+                            <td>@article.UpdatedAt.ToString("g")</td>
+                            <td>
+                                <a asp-controller="Article" asp-action="Details" asp-route-id="@article.Id" class="btn btn-sm btn-primary">Podgląd</a>
+                                <a asp-controller="Article" asp-action="Edit" asp-route-id="@article.Id" class="btn btn-sm btn-secondary">Edytuj</a>
+                            </td>
+                        </tr>
+            }
+            </tbody>
+        </table>
+}

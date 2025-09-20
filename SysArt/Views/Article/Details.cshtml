@@ -1,0 +1,88 @@
+﻿@model SysArt.Models.Articles
+
+@{
+    ViewData["Title"] = "Szczegóły artykułu";
+    var currentUserEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+    bool isAuthor = !string.IsNullOrWhiteSpace(currentUserEmail) &&
+                    !string.IsNullOrWhiteSpace(Model.CoAuthors) &&
+                    Model.CoAuthors.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                                   .Contains(currentUserEmail);
+}
+
+<h2>@Model.Title</h2>
+
+<div class="mb-3">
+    <strong>Temat:</strong> @Model.Topic?.Name <br />
+    <strong>Status:</strong> @Model.Status <br />
+    <strong>Dodano:</strong> @Model.CreatedAt.ToShortDateString() <br />
+    <strong>Aktualizacja:</strong> @Model.UpdatedAt.ToShortDateString()
+</div>
+
+<div class="mb-3">
+    <h4>Treść artykułu:</h4>
+    <p>@Model.Content</p>
+</div>
+
+<div class="mb-3">
+    <h4>Autorzy:</h4>
+    @if (!string.IsNullOrWhiteSpace(Model.CoAuthors))
+    {
+            <ul>
+            @foreach (var author in Model.CoAuthors.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            {
+                    <li>@author</li>
+            }
+            </ul>
+    }
+    else
+    {
+            <p>Brak autorów.</p>
+    }
+</div>
+
+<div class="mb-3">
+    <h4>Recenzje:</h4>
+    @if (Model.Reviews != null && Model.Reviews.Any())
+    {
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Recenzent</th>
+                        <th>Ocena</th>
+                        <th>Komentarz</th>
+                        <th>Data</th>
+                        <th>Akcja</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var review in Model.Reviews)
+                {
+                        <tr>
+                            <td>@(review.Reviewer != null ? review.Reviewer.Name + " " + review.Reviewer.LastName : "Nieznany")</td>
+                            <td>@review.Rating</td>
+                            <td>@review.Content</td>
+                            <td>@review.AssignedAt.ToShortDateString()</td>
+                            <td>
+                            @if (review.Reviewer != null && review.Reviewer.Email == currentUserEmail)
+                            {
+                                        <a asp-action="EditReview" asp-route-reviewId="@review.Id" class="btn btn-warning btn-sm">Edytuj recenzję</a>
+                            }
+                            </td>
+                        </tr>
+                }
+                </tbody>
+            </table>
+    }
+    else
+    {
+            <p>Brak recenzji dla tego artykułu.</p>
+    }
+</div>
+
+<div class="mb-3">
+    @if (isAuthor)
+    {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edytuj artykuł</a>
+    }
+    <a asp-action="AuthorPanel" class="btn btn-secondary">Powrót do panelu autora</a>
+</div>
